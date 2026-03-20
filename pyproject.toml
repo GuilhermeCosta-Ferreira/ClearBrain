@@ -6,7 +6,7 @@ authors = [
     {name = "GuilhermeCF",email = "guilherme.henriquesdacostaferreira@epfl.ch"}
 ]
 readme = "README.md"
-requires-python = "=3.11,<3.12""
+requires-python = ">=3.11,<3.12"
 dependencies = [
 ]
 
