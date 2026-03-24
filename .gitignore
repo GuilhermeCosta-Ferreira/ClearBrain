@@ -208,3 +208,5 @@ __marimo__/
 
 # Personalized
 data/
+out/
+.zed/
