@@ -1,16 +1,18 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
+from matplotlib import pyplot as plt
+
 from pathlib import Path
 
-from clearbrain import (
-    load_points,
-    scale_points,
-    filter_low_density_points,
+from clearbrain.save import save_to_json
+from clearbrain.centerline import (
     get_centerline,
     smooth_centerline,
-    plot_3d_clearD,
-    save_centerline,
+    plot_clear_data_with_centerline
+)
+from clearbrain import (
+    load_points,
 )
 
 
@@ -22,22 +24,16 @@ from clearbrain import (
 DATA_FOLDER: Path = Path("data")
 PLOT_FOLDER: Path = Path("out")
 MICE: list = ["32B"]
-FILE_TARGET: str = "raw_points_sc.json"
-
-# Scaling Settings
-X_SCALE: float = 2.22  # Why?
-Y_SCALE: float = 1.0
-Z_SCALE: float = 1.0
+FILE_TARGET: str = "filtered_points_sc.json"
 
 # Cenetrline Settings
-DENSITY_RADIUS: int = 50 #50
-MIN_DENSITY: int = 25 #20 [20, 50[, [20, 30]
 BIN_WIDTH: int = 500
+HIGHLIGHT_CENTERLINE: bool = True # makes sure the line is drawn on top of it
 
 # Centerline Smoothing Settings
 SPLINE_SMOOTHING: float = 5000.0  # ← extremely smooth (as requested)
 N_POINTS_ON_LINE: float = 4000  # more points = perfectly smooth visual
-PLOT_SUBSAMPLE: int = 1  # Get's every X points
+PLOT_SUBSAMPLE: int = 80  # Get's every X points
 
 
 
@@ -50,21 +46,15 @@ if __name__ == "__main__":
 
         # 1. Load the points
         points = load_points(filepath)
-        points = scale_points(points, (X_SCALE, Y_SCALE, Z_SCALE))
-
-        # 2. Remove sparse points
-        points = filter_low_density_points(points, DENSITY_RADIUS, MIN_DENSITY)
 
         # 3. Get the centerline and smooths it
         centerline = get_centerline(points, BIN_WIDTH)
         centerline = smooth_centerline(centerline, SPLINE_SMOOTHING, N_POINTS_ON_LINE)
 
-        print(centerline)
-        print(type(centerline))
-
         # 4. Generate the 3D plot
-        fig_3d = plot_3d_clearD(points, filepath.stem, PLOT_SUBSAMPLE, centerline)
-        fig_3d.show()
+        plot_clear_data_with_centerline(points, centerline, PLOT_SUBSAMPLE, HIGHLIGHT_CENTERLINE)
+        plt.show()
 
         # 5. Saved the data
-        save_centerline(centerline, fig_3d, PLOT_FOLDER, filepath.stem)
+        out_path = save_to_json(centerline.tolist(), filepath.parent, "centerline_sc.json")
+        print(f"Saved filtered data from {mouse} into {out_path}")
