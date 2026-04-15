@@ -3,7 +3,7 @@
 # ================================================================
 import numpy as np
 
-from scipy.spatial import KDTree
+from ..density import get_density
 
 
 
@@ -15,8 +15,5 @@ def filter_low_density_points(
     density_radius: float,
     min_density: int,
 ) -> np.ndarray:
-    tree = KDTree(points)
-    densities = np.array(
-        [len(tree.query_ball_point(p, r=density_radius)) - 1 for p in points]
-    )
+    densities = get_density(points, density_radius)
     return points[densities > min_density]

@@ -11,11 +11,14 @@ import plotly.graph_objects as go
 # ================================================================
 def plot_3d_clearD(
     points: np.ndarray,
-    centerline: np.ndarray,
     sample_name: str,
-    plot_subsample: int,
+    plot_subsample: int = 80,
+    centerline: np.ndarray | None = None,
 ) -> go.Figure:
     reduced_points = points[::plot_subsample]
+
+    if centerline is None:
+        centerline = np.zeros_like(points)
 
     fig = go.Figure()
 
