@@ -9,10 +9,12 @@ from clearbrain.save import save_to_json
 from clearbrain.centerline import (
     get_centerline,
     smooth_centerline,
-    plot_clear_data_with_centerline
+    add_centerline
 )
+
 from clearbrain import (
     load_points,
+    plot_3d_clear_points
 )
 
 
@@ -51,7 +53,8 @@ if __name__ == "__main__":
         centerline = smooth_centerline(centerline, SPLINE_SMOOTHING, N_POINTS_ON_LINE)
 
         # 3. Generate the 3D plot
-        plot_clear_data_with_centerline(points, centerline, PLOT_SUBSAMPLE, HIGHLIGHT_CENTERLINE)
+        fig, ax = plot_3d_clear_points(points, PLOT_SUBSAMPLE)
+        add_centerline(ax, centerline, HIGHLIGHT_CENTERLINE)
         plt.show()
 
         # 4. Saved the data

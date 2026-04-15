@@ -5,9 +5,10 @@ from matplotlib import pyplot as plt
 
 from pathlib import Path
 
-from clearbrain.sections import get_spinal_sections, plot_spinal_sections
+from clearbrain.sections import get_spinal_sections, add_spinal_sections
+from clearbrain.centerline import add_centerline
 from clearbrain.save import save_to_json
-from clearbrain import load_points
+from clearbrain import load_points, plot_3d_clear_points
 
 
 
@@ -22,6 +23,9 @@ FILE_TARGET: str = "filtered_points_sc.json"
 PRISM_HALF_WIDTH: int = 1000        # ← 2000×2000 square base (as requested)
 PRISM_HALF_THICKNESS: int = 250     # ← 500 units thick
 N_CUTS: int = 10                    # 10 axial cuts
+
+HIGHLIGHT_CENTERLINE: bool = True # makes sure the line is drawn on top of it
+PLOT_SUBSAMPLE: int = 80  # Get's every X points
 
 
 
@@ -41,7 +45,9 @@ if __name__ == '__main__':
         spinal_sections = get_spinal_sections(centerline, N_CUTS, PRISM_HALF_WIDTH, PRISM_HALF_THICKNESS)
 
         # 3. Generate the 3D plot
-        plot_spinal_sections(spinal_sections, points, centerline)
+        fig, ax = plot_3d_clear_points(points, PLOT_SUBSAMPLE)
+        ax = add_centerline(ax, centerline, HIGHLIGHT_CENTERLINE)
+        add_spinal_sections(ax, spinal_sections)
         plt.show()
 
         # 4. Saved the data

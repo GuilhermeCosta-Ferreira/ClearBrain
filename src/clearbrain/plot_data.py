@@ -17,8 +17,8 @@ def plot_3d_clear_points(points: np.ndarray, plot_subsample: int = 80) -> tuple:
     z = reduced_points[:, 2]
 
     # 2. Instantiates the Plot
-    fig_3d = plt.figure(figsize=(10, 6))
-    ax = fig_3d.add_subplot(projection='3d')
+    fig_3d = plt.figure(figsize=(15, 10))
+    ax = fig_3d.add_subplot(111, projection='3d')
 
     # 3. Does the ploting of the points
     ax.scatter(x, y, z, s=1, label="High-density cFos cells") # type: ignore

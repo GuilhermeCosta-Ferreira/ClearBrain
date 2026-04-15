@@ -3,7 +3,9 @@
 # ================================================================
 import numpy as np
 from matplotlib import pyplot as plt
+
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+from matplotlib.axes import Axes
 
 
 
@@ -12,9 +14,6 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 # ================================================================
 def plot_spinal_sections(
     spinal_sections: np.ndarray,
-    points: np.ndarray,
-    centerline: np.ndarray,
-    plot_subsample: int = 80,
 ) -> tuple:
     fig = plt.figure(figsize=(10, 10))
     ax = fig.add_subplot(projection="3d")
@@ -22,25 +21,6 @@ def plot_spinal_sections(
     all_x = []
     all_y = []
     all_z = []
-
-    reduced_points = points[::plot_subsample]
-    x = reduced_points[:, 0]
-    y = reduced_points[:, 1]
-    z = reduced_points[:, 2]
-    ax.scatter(x, y, z, s=1, label="High-density cFos cells") # type: ignore
-
-    x = centerline[:, 0]
-    y = centerline[:, 1]
-    z = centerline[:, 2]
-    ax.scatter(x, y, z, s=1, color='red', label="Centerline", zorder=None) # type: ignore
-
-    all_x.extend(reduced_points[:, 0])
-    all_y.extend(reduced_points[:, 1])
-    all_z.extend(reduced_points[:, 2])
-
-    all_x.extend(centerline[:, 0])
-    all_y.extend(centerline[:, 1])
-    all_z.extend(centerline[:, 2])
 
     for prism in spinal_sections:
         ax = build_prims(ax, prism)
@@ -59,6 +39,14 @@ def plot_spinal_sections(
 
     return fig, ax
 
+def add_spinal_sections(
+    ax: Axes,
+    spinal_sections: np.ndarray,
+) -> Axes:
+    for prism in spinal_sections:
+        ax = build_prims(ax, prism)
+
+    return ax
 
 
 # ──────────────────────────────────────────────────────
