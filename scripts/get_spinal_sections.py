@@ -42,7 +42,13 @@ if __name__ == '__main__':
         centerline = load_points(centerline_path)
 
         # 2. Get the spinal sections
-        spinal_sections = get_spinal_sections(centerline, N_CUTS, PRISM_HALF_WIDTH, PRISM_HALF_THICKNESS)
+        spinal_sections, section_points = get_spinal_sections(
+            points,
+            centerline,
+            N_CUTS,
+            PRISM_HALF_WIDTH,
+            PRISM_HALF_THICKNESS
+        )
 
         # 3. Generate the 3D plot
         fig, ax = plot_3d_clear_points(points, PLOT_SUBSAMPLE)
@@ -50,6 +56,10 @@ if __name__ == '__main__':
         add_spinal_sections(ax, spinal_sections)
         plt.show()
 
+
         # 4. Saved the data
-        out_path = save_to_json(centerline.tolist(), filepath.parent, "sections_sc.json")
-        print(f"Saved filtered data from {mouse} into {out_path}")
+        out_path = save_to_json(spinal_sections.tolist(), filepath.parent, "sections_sc.json")
+        print(f"Saved section data from {mouse} into {out_path}")
+        out_data = [section.tolist() for section in section_points]
+        out_path = save_to_json(out_data, filepath.parent, "section_points_sc.json")
+        print(f"Saved section point data from {mouse} into {out_path}")

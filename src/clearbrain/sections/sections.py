@@ -9,11 +9,12 @@ import numpy as np
 # 1. Section: Functions
 # ================================================================
 def get_spinal_sections(
+    points: np.ndarray,
     centerline: np.ndarray,
     nr_cuts: int,
     half_width: float,
     half_thickness: float
-) -> np.ndarray:
+) -> tuple:
     # 1. Initializes the sections indexes
     start_idx = int(0.05 * len(centerline))
     end_idx   = int(0.95 * len(centerline))
@@ -21,6 +22,7 @@ def get_spinal_sections(
 
     # 2. Get the vectors for each section
     all_prisms = []
+    section_points = []
     for idx in indices:
         # 2.1. Get the centerline center position as a center ref
         centerline_pos = centerline[idx]
@@ -32,13 +34,22 @@ def get_spinal_sections(
         u, v = get_basis_vector(tagent_vector)
 
         # 2.4 Get the vertices of the prism
-        v = get_vertices(centerline_pos, tagent_vector, (u, v), half_width, half_thickness)
+        vert = get_vertices(centerline_pos, tagent_vector, (u, v), half_width, half_thickness)
 
-        # 2.5 Store the prism
-        prism_corners = [corner.tolist() for corner in v]
+        # 2.5. Get the contained points
+        d = points - centerline_pos
+        inside = (
+            (np.abs(d @ tagent_vector) <= half_thickness) &
+            (np.abs(d @ u) <= half_width) &
+            (np.abs(d @ v) <= half_width)
+        )
+        section_points.append(points[inside])
+
+        # 2.6 Store the prism
+        prism_corners = [corner.tolist() for corner in vert]
         all_prisms.append(prism_corners)
 
-    return np.asarray(all_prisms)
+    return np.asarray(all_prisms), section_points
 
 
 # ──────────────────────────────────────────────────────
